@@ -6,8 +6,8 @@ My public notes, findings and experience with UGREEN DXP6800 Pro NAS from kickst
 My DXP6800 has multiple NVME slots; not all of them run at full speeds (x4), not all of them are PCIe 4.0. Information on reddit about the details of them is limited - so I spent a weekend tinkering to answer this question in detail.
 
 TL;DR
-- UGOS nvme slot (base operating system, not easily accessible, requires tear down): **PCIe 3.0 x1 ~800 MB/s)**
-- NVME slot 1: **PCIE 3.0 xx ~1600 MB/s**
+- UGOS nvme slot (base operating system, not easily accessible, requires tear down): **PCIe 3.0 x1  ~800 MB/s**
+- NVME slot 1: **PCIE 3.0 x2 ~1600 MB/s**
 - NVME slot 2: **PCIE 4.0 x4 ~7000 MB/s**
 
 The DXP6800 Pro has a PCIE 4.0 expansion slot and using an nvme PCIE bracket I was able to get **4 NVME devices on the DXP6800** operating at the same time. 
