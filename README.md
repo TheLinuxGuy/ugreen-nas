@@ -9,10 +9,69 @@ TL;DR
 - UGOS nvme slot (base operating system, not easily accessible, requires tear down): **PCIe 3.0 x1  ~800 MB/s**
 - NVME slot 1: **PCIE 3.0 x2 ~1600 MB/s**
 - NVME slot 2: **PCIE 4.0 x4 ~7000 MB/s**
+- PCIe slot x4.
 
 The DXP6800 Pro has a PCIE 4.0 expansion slot and using an nvme PCIE bracket I was able to get **4 NVME devices on the DXP6800** operating at the same time. 
 
 Due to PCIE bandwidth limitations the experience is not equal among the nvme devices - thus a RAID NVME array would suffer from performance bottlenecks on its weakest link PCIE 3.0 x1
+
+Evidence from my setup
+
+```
+# nvme list -v 
+Subsystem        Subsystem-NQN                                                                                    Controllers
+---------------- ------------------------------------------------------------------------------------------------ ----------------
+nvme-subsys3     nqn.2018-01.com.wdc:nguid:E8238FA6BF53-0001-001B448B478C24C8                                     nvme3
+nvme-subsys2     nqn.2023-03.com.intel:nvm-subsystem-sn-phka311603lz2p0c                                          nvme2
+nvme-subsys1     nqn.2014.08.org.nvmexpress:c0a9c0a92307E6AD9D94        CT2000P3SSD8                              nvme1
+nvme-subsys0     nqn.2023-03.com.intel:nvm-subsystem-sn-btka312104k52p0c                                          nvme0
+
+Device   SN                   MN                                       FR       TxPort Address        Subsystem    Namespaces      
+-------- -------------------- ---------------------------------------- -------- ------ -------------- ------------ ----------------
+nvme3    x         WD Red SN700 1000GB                      111150WD pcie   0000:58:00.0   nvme-subsys3 nvme3n1
+nvme2    x     INTEL SSDPEKNU020TZ                      002C     pcie   0000:57:00.0   nvme-subsys2 nvme2n1
+nvme1    x         CT2000P3SSD8                             P9CR30A  pcie   0000:02:00.0   nvme-subsys1 nvme1n1
+nvme0    x     INTEL SSDPEKNU020TZ                      003C     pcie   0000:01:00.0   nvme-subsys0 nvme0n1
+
+Device       Generic      NSID     Usage                      Format           Controllers     
+------------ ------------ -------- -------------------------- ---------------- ----------------
+/dev/nvme3n1 /dev/ng3n1   1          1.00  TB /   1.00  TB    512   B +  0 B   nvme3
+/dev/nvme2n1 /dev/ng2n1   1          2.05  TB /   2.05  TB    512   B +  0 B   nvme2
+/dev/nvme1n1 /dev/ng1n1   1          2.00  TB /   2.00  TB    512   B +  0 B   nvme1
+/dev/nvme0n1 /dev/ng0n1   1          2.05  TB /   2.05  TB    512   B +  0 B   nvme0
+# lspci -vv -nn -s 0000:58:00.0|grep Lnk
+		LnkCap:	Port #0, Speed 8GT/s, Width x4, ASPM L1, Exit Latency L1 <8us
+		LnkCtl:	ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+		LnkSta:	Speed 8GT/s, Width x1 (downgraded)
+		LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer- 2Retimers- DRS-
+		LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
+		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+ EqualizationPhase1+
+		LnkCtl3: LnkEquIntrruptEn- PerformEqu-
+# lspci -vv -nn -s 0000:57:00.0|grep Lnk
+		LnkCap:	Port #0, Speed 8GT/s, Width x4, ASPM L1, Exit Latency L1 <8us
+		LnkCtl:	ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+		LnkSta:	Speed 8GT/s, Width x2 (downgraded)
+		LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer- 2Retimers- DRS-
+		LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
+		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+ EqualizationPhase1+
+		LnkCtl3: LnkEquIntrruptEn- PerformEqu-
+# lspci -vv -nn -s 0000:02:00.0|grep Lnk
+		LnkCap:	Port #1, Speed 8GT/s, Width x4, ASPM L1, Exit Latency L1 unlimited
+		LnkCtl:	ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+		LnkSta:	Speed 8GT/s, Width x4
+		LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer- 2Retimers- DRS-
+		LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
+		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+ EqualizationPhase1+
+		LnkCtl3: LnkEquIntrruptEn- PerformEqu-
+# lspci -vv -nn -s 0000:01:00.0|grep Lnk
+		LnkCap:	Port #0, Speed 8GT/s, Width x4, ASPM L1, Exit Latency L1 <8us
+		LnkCtl:	ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+		LnkSta:	Speed 8GT/s, Width x4
+		LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer- 2Retimers- DRS-
+		LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
+		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+ EqualizationPhase1+
+		LnkCtl3: LnkEquIntrruptEn- PerformEqu-
+```
 
 ### UGREEN OS "CACHE" techniques and setup
 
