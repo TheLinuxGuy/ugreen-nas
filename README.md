@@ -8,7 +8,7 @@ My DXP6800 has multiple NVME slots; not all of them run at full speeds (x4), not
 TL;DR
 - UGOS nvme slot (base operating system, not easily accessible, requires tear down): **PCIe 3.0 x1  ~800 MB/s**
 - NVME slot 1: **PCIE 3.0 x2 ~1600 MB/s**
-- NVME slot 2: **PCIE 3.0 x4 ~7000 MB/s**
+- NVME slot 2 (next to memory slot): **PCIE 3.0 x4 ~3600 MB/s**
 - PCIe slot PCIE 3.0 x4.
 
 The DXP6800 Pro has a PCIE 4.0 expansion slot and using an nvme PCIE bracket I was able to get **4 NVME devices on the DXP6800** operating at the same time. 
