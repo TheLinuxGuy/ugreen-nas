@@ -20,6 +20,37 @@ What is this:
 # zpool create -o ashift=13 -O atime=off -O compression=lz4 pool /dev/bcache0
 ```
 
+Best results are with extra weeks at the bottom.
+
+TL;DR on the best results.
+```
+SEQUENTIAL WRITE: bw=1176MiB/s (1233MB/s), 1176MiB/s-1176MiB/s (1233MB/s-1233MB/s), io=69.3GiB (74.4GB), run=60320-60320msec
+
+RANDOM WRITE: bw=1298MiB/s (1361MB/s), 1298MiB/s-1298MiB/s (1361MB/s-1361MB/s), io=76.1GiB (81.7GB), run=60001-60001msec
+
+SEQUENTIAL READ: bw=10.4GiB/s (11.1GB/s), 10.4GiB/s-10.4GiB/s (11.1GB/s-11.1GB/s), io=622GiB (667GB), run=60001-60001msec
+
+RANDOM READ: bw=496MiB/s (520MB/s), 496MiB/s-496MiB/s (520MB/s-520MB/s), io=29.1GiB (31.2GB), run=60001-60001msec
+```
+
+### ZFS specific settings
+
+```
+root@UNO:~# cat /sys/module/zfs/parameters/zfs_prefetch_disable
+0
+root@UNO:~# cat /sys/module/zfs/parameters/zfs_txg_timeout
+10
+root@UNO:~# cat /sys/module/zfs/parameters/l2arc_write_max
+2147483648
+root@UNO:~# cat /sys/module/zfs/parameters/l2arc_write_boost
+2147483648
+root@UNO:~# cat /sys/module/zfs/parameters/l2arc_headroom
+0
+root@UNO:~# cat /sys/module/zfs/parameters/l2arc_noprefetch
+0
+root@UNO:~# cat /sys/module/zfs/parameters/l2arc_rebuild_enabled
+1
+```
 
 ### Test results summary (without extra tweaks)
 
