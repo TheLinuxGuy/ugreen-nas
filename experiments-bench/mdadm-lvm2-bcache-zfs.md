@@ -9,16 +9,27 @@ What is this:
 
 ### Setup notes
 
-```
-# make-bcache -C /dev/nvme1n1 -B /dev/mapper/vg1-array --block 4k --bucket 2M --writeback
+
+```bash
+# make-bcache -C /dev/nvme1n1 -B /dev/mapper/vg1-slowsky --block 4k --bucket 2M --writeback
 # echo 0 > /sys/fs/bcache/db0f97bf-5a9a-479d-850a-8ee97c355d01/congested_write_threshold_us 
 # echo 0 > /sys/fs/bcache/db0f97bf-5a9a-479d-850a-8ee97c355d01/congested_read_threshold_us 
 # echo 0 > /sys/block/bcache0/bcache/sequential_cutoff 
-# echo 8192 > /sys/block/bcache0/queue/read_ahead_kb 
+# echo 16348 > /sys/block/bcache0/queue/read_ahead_kb 
 # echo 0 > /sys/class/block/bcache0/bcache/sequential_cutoff 
 # echo 10 > /sys/class/block/bcache0/bcache/writeback_delay 
+echo 4096 > /sys/devices/virtual/block/dm-0/bcache/writeback_rate_minimum
+echo 10 > /sys/devices/virtual/block/dm-0/bcache/writeback_delay
 # zpool create -o ashift=13 -O atime=off -O compression=lz4 pool /dev/bcache0
 ```
+
+```bash
+echo 1 > /sys/block/dm-0/bcache/stop
+echo /dev/mapper/vg1-slowsky > /sys/fs/bcache/register
+```
+
+performance check.
+`cat /sys/devices/virtual/block/dm-0/bcache/writeback_rate_debug`
 
 Best results are with extra weeks at the bottom.
 
@@ -36,19 +47,19 @@ RANDOM READ: bw=496MiB/s (520MB/s), 496MiB/s-496MiB/s (520MB/s-520MB/s), io=29.1
 ### ZFS specific settings
 
 ```
-root@UNO:~# cat /sys/module/zfs/parameters/zfs_prefetch_disable
+# cat /sys/module/zfs/parameters/zfs_prefetch_disable
 0
-root@UNO:~# cat /sys/module/zfs/parameters/zfs_txg_timeout
+# cat /sys/module/zfs/parameters/zfs_txg_timeout
 10
-root@UNO:~# cat /sys/module/zfs/parameters/l2arc_write_max
+# cat /sys/module/zfs/parameters/l2arc_write_max
 2147483648
-root@UNO:~# cat /sys/module/zfs/parameters/l2arc_write_boost
+# cat /sys/module/zfs/parameters/l2arc_write_boost
 2147483648
-root@UNO:~# cat /sys/module/zfs/parameters/l2arc_headroom
+# cat /sys/module/zfs/parameters/l2arc_headroom
 0
-root@UNO:~# cat /sys/module/zfs/parameters/l2arc_noprefetch
+# cat /sys/module/zfs/parameters/l2arc_noprefetch
 0
-root@UNO:~# cat /sys/module/zfs/parameters/l2arc_rebuild_enabled
+# cat /sys/module/zfs/parameters/l2arc_rebuild_enabled
 1
 ```
 
@@ -57,7 +68,7 @@ root@UNO:~# cat /sys/module/zfs/parameters/l2arc_rebuild_enabled
 The best results was the proper settings below.
 
 TL;DR
-```
+```bash
 SEQUENTIAL WRITE: bw=1057MiB/s (1108MB/s), 1057MiB/s-1057MiB/s (1108MB/s-1108MB/s), io=62.0GiB (66.5GB), run=60017-60017msec
 
 RANDOM WRITE: bw=1295MiB/s (1358MB/s), 1295MiB/s-1295MiB/s (1358MB/s-1358MB/s), io=75.9GiB (81.5GB), run=60001-60001msec
@@ -70,15 +81,13 @@ RANDOM READ: bw=359MiB/s (376MB/s), 359MiB/s-359MiB/s (376MB/s-376MB/s), io=21.0
 ### Test 2 - extra tweaks - improved random read
 
 ```
-root@UNO:~# echo 0 > /sys/module/zfs/parameters/zfs_prefetch_disable 
-root@UNO:~# echo 10 > /sys/module/zfs/parameters/zfs_txg_timeout 
-root@UNO:~# echo 2147483648 > /sys/module/zfs/parameters/l2arc_write_max 
-root@UNO:~# echo 2147483648 > /sys/module/zfs/parameters/l2arc_write_boost 
-root@UNO:~# echo 0 > /sys/module/zfs/parameters/l2arc_headroom
-root@UNO:~# echo 0 > /sys/module/zfs/parameters/l2arc_noprefetch 
-root@UNO:~# echo 1 > /sys/module/zfs/p
-parameters/         properties.dataset/ properties.pool/    properties.vdev/    
-root@UNO:~# echo 1 > /sys/module/zfs/parameters/l2arc_rebuild_enabled 
+# echo 0 > /sys/module/zfs/parameters/zfs_prefetch_disable 
+# echo 10 > /sys/module/zfs/parameters/zfs_txg_timeout 
+# echo 2147483648 > /sys/module/zfs/parameters/l2arc_write_max 
+# echo 2147483648 > /sys/module/zfs/parameters/l2arc_write_boost 
+# echo 0 > /sys/module/zfs/parameters/l2arc_headroom
+# echo 0 > /sys/module/zfs/parameters/l2arc_noprefetch 
+# echo 1 > /sys/module/zfs/parameters/l2arc_rebuild_enabled 
 ```
 
 TL;DR
@@ -618,6 +627,6 @@ ZIL committed transactions:                                        30.6k
         Transactions to SLOG storage pool:            0 Bytes          0
         Transactions to non-SLOG storage pool:      114.2 MiB       1.0k
 
-root@UNO:~# 
+# 
 
 ```

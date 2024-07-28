@@ -28,7 +28,7 @@ We actually lost flexibility raid from the /dev/md127 (1.8TB of wasted space tha
 
 
 TL;DR
-```
+```bash
 SEQUENTIAL WRITE: bw=1093MiB/s (1146MB/s), 1093MiB/s-1093MiB/s (1146MB/s-1146MB/s), io=64.1GiB (68.8GB), run=60032-60032msec
 
 RANDOM WRITE: bw=261MiB/s (274MB/s), 261MiB/s-261MiB/s (274MB/s-274MB/s), io=15.3GiB (16.5GB), run=60108-60108msec

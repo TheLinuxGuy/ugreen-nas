@@ -9,7 +9,7 @@ What this is:
 ### Test results
 
 TLDR
-```
+```bash
 SEQUENTIAL WRITE: bw=130MiB/s (137MB/s), 130MiB/s-130MiB/s (137MB/s-137MB/s), io=7991MiB (8379MB), run=61265-61265msec
 
 RANDOM WRITE: bw=1196MiB/s (1254MB/s), 1196MiB/s-1196MiB/s (1254MB/s-1254MB/s), io=70.1GiB (75.3GB), run=60001-60001msec
@@ -21,7 +21,7 @@ RANDOM READ: bw=390MiB/s (409MB/s), 390MiB/s-390MiB/s (409MB/s-409MB/s), io=22.8
 
 ## Settings
 
-```
+```bash
 root@UNO:~# cat /sys/module/zfs/parameters/zfs_prefetch_disable
 0
 root@UNO:~# cat /sys/module/zfs/parameters/zfs_txg_timeout

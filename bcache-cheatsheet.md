@@ -9,6 +9,17 @@ CLI commands, cheatsheet, tricks and learnings from bcache experiment.
 ### bcache stats
 
 ```bash
+root@UNO:/sys/block/bcache0/bcache/stats_five_minute# grep -H . *
+bypassed:0.0k
+cache_bypass_hits:0
+cache_bypass_misses:0
+cache_hit_ratio:87
+cache_hits:244
+cache_miss_collisions:0
+cache_misses:35
+```
+
+```bash
 # cat /sys/fs/bcache/2b65d2e6-c5c6-418f-88df-b0ae1eb6e37f/cache0/priority_stats
 Unused:		0%
 Clean:		79%
@@ -91,6 +102,7 @@ echo 1 > /sys/fs/bcache/8f63b718-7c97-47d8-8e44-084b2814deaa/unregister
 
 ```bash
 echo 2b65d2e6-c5c6-418f-88df-b0ae1eb6e37f > /sys/block/bcache0/bcache/detach
+echo 1 > /sys/block/md127/bcache/stop
 echo 1 > /sys/fs/bcache/2b65d2e6-c5c6-418f-88df-b0ae1eb6e37f/stop
 ```
 
