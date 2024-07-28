@@ -2,6 +2,10 @@
 
 CLI commands, cheatsheet, tricks and learnings from bcache experiment.
 
+### Resources
+- https://wiki.archlinux.org/title/User:Sigmike/bcache
+- https://sebastian.marsching.com/wiki/bin/view/Linux/Bcache/
+
 ### bcache stats
 
 ```bash

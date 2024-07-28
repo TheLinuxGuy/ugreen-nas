@@ -1,4 +1,4 @@
-# mdadm + lvm2 + bcache + btrfs
+# mdadm + lvm2 + bcache + zfs
 
 What is this:
 - Add bcache to the mix
