@@ -89,6 +89,8 @@ If all you are looking for in a NAS is throwing a bunch of disks on a RAID with 
 
 `CONTROL + F2` to get to BIOS. If running third party OS, disable watchdog service.
 
+`CONTROL + F1` after you are inside BIOS to be able to [view ALL hidden options](https://www.reddit.com/r/UgreenNASync/comments/1e83h8l/trying_to_modify_bios_to_lower_power_consumption/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button).
+
 ## Backing up and restoring the original UGREEN OS
 
 I have successfully backed up the 128gb NVME included with the DXP6800 Pro into a 1TB NVME using Clonezilla. As of Jun 30, 2024 UGREEN does not provide a bootable USB or ISO to install their operating system into any disk.

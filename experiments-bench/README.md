@@ -14,3 +14,38 @@ A few things I learned a long the way:
 
 `bwm-ng -i disk -I md0,md1,md3`
 
+
+
+#### Miscelaneous
+
+NVMEs may not support TRIM. Check
+
+```bash
+cat /sys/block/<device>/queue/discard_zeroes_data
+0 => TRIM (UNMAP) disabled
+1 => TRIM (UNMAP) enabled
+```
+
+Verify with nvme-cli tool
+- https://nvmexpress.org/wp-content/uploads/NVM-Express-NVM-Command-Set-Specification-1.0c-2022.10.03-Ratified.pdf
+
+```bash
+root@UNO:~# nvme id-ns /dev/nvme0n1 -H | grep -A 4 "dlfeat"
+dlfeat  : 9
+  [4:4] : 0	Guard Field of Deallocated Logical Blocks is set to 0xFFFF
+  [3:3] : 0x1	Deallocate Bit in the Write Zeroes Command is Supported
+  [2:0] : 0x1	Bytes Read From a Deallocated Logical Block and its Metadata are 0x00
+# cat /sys/block/nvme0n1/queue/discard_zeroes_data
+0
+root@UNO:~# nvme id-ns /dev/nvme1n1 -H | grep -A 4 "dlfeat"
+dlfeat  : 0
+  [4:4] : 0	Guard Field of Deallocated Logical Blocks is set to 0xFFFF
+  [3:3] : 0	Deallocate Bit in the Write Zeroes Command is Not Supported
+  [2:0] : 0	Bytes Read From a Deallocated Logical Block and its Metadata are Not Reported
+
+root@UNO:~# nvme id-ns /dev/nvme2n1 -H | grep -A 4 "dlfeat"
+dlfeat  : 8
+  [4:4] : 0	Guard Field of Deallocated Logical Blocks is set to 0xFFFF
+  [3:3] : 0x1	Deallocate Bit in the Write Zeroes Command is Supported
+  [2:0] : 0	Bytes Read From a Deallocated Logical Block and its Metadata are Not Reported
+  ```
