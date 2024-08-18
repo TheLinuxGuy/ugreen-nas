@@ -6,6 +6,40 @@ CLI commands, cheatsheet, tricks and learnings from bcache experiment.
 - https://wiki.archlinux.org/title/User:Sigmike/bcache
 - https://sebastian.marsching.com/wiki/bin/view/Linux/Bcache/
 
+## Setup and speed tweaks to always use cache first
+
+```bash
+find /sys/ -type f -name "congested_write_threshold_us" -path "*/bcache/*"  -exec bash -c 'echo 0 > {}' \;
+find /sys/ -type f -name "congested_read_threshold_us" -path "*/bcache/*"  -exec bash -c 'echo 0 > {}' \;
+find /sys/ -type f -name "writeback_delay" -path "*/bcache/*" -exec bash -c 'echo 10 > {}' \;
+find /sys/ -type f -name "writeback_rate_minimum" -path "*/bcache/*" -exec bash -c 'echo 4096 > {}' \;
+find /sys/ -type f -name "writeback_percent" -path "*/bcache/*" -exec bash -c 'echo 1 > {}' \;
+find /sys/ -type f -name "read_ahead_kb" -path "*/bcache*/queue/*" -exec bash -c 'echo 8192 > {}' \;
+```
+
+#### NVME/SSD TRIM on bcache aka discard
+
+There are warnings this is dangorous in the Arch Linux wiki. 
+
+A workaround is recommended, to leave 10-20% of disk in separate partition:
+- https://lore.kernel.org/linux-bcache/CAC2ZOYvoVfpNh-4hcYxPJkgA9kkK2Scbqg_ce2LO+Xk7D-6drQ@mail.gmail.com/T/ 
+
+```
+If you want to make use of trimmed space without using online discard,
+your best chance is to create a blank partition on the caching device
+after the bcache partition, blkdiscard that, and never touch it. Now
+re-create bcache in the first partition. The blank partition should be
+around 10-20% of your device size. This way, the SSD firmware can
+still do background wear-leveling by swapping flash pages with the
+untouched partition and do background gc/erase. This will keep bcache
+latency low, and performance should be stable.
+```
+
+### Using ZFS on top of bcache requires changes to udev rules
+
+For proxmox, modify
+`/usr/lib/udev/rules.d/69-bcache.rules` file with my repo copy.
+
 ### bcache stats
 
 ```bash
@@ -83,19 +117,6 @@ echo 1 > /sys/fs/bcache/8f63b718-7c97-47d8-8e44-084b2814deaa/unregister
 
 ```bash
 
-```
-
-## Setup and speed tweaks to always use cache first
-
-```bash
-# make-bcache -C /dev/nvme1n1 -B /dev/mapper/vg1-array --block 4k --bucket 2M --writeback
-# mkfs.btrfs -L array /dev/bcache0
-# echo 0 > /sys/fs/bcache/bcbec9f6-6278-4475-9865-f7932c749477/congested_write_threshold_us 
-# echo 0 > /sys/fs/bcache/bcbec9f6-6278-4475-9865-f7932c749477/congested_read_threshold_us 
-# echo 0 > /sys/block/bcache0/bcache/sequential_cutoff 
-# echo 8192 > /sys/block/bcache0/queue/read_ahead_kb 
-# echo 0 > /sys/class/block/bcache0/bcache/sequential_cutoff
-# echo 10 > /sys/class/block/bcache0/bcache/writeback_delay
 ```
 
 ## Remove a cache disk (leave backing storage)

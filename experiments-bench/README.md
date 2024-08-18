@@ -9,6 +9,9 @@ A few things I learned a long the way:
 - Using `LVM2` on top of everything barely has any impacts on performance observed. 
 - mdadm-lvm2-bcache-zfs.md saw the most performance across the board on `disk-speedtest.sh` tests. !! AS LONG AS YOU CUSTOMIZE CERTAIN ZFS DEFAULTS !! LVM2 layer seems to improve writes.
 
+Resources:
+- https://doc.beegfs.io/latest/advanced_topics/storage_tuning.html 
+
 
 ## Quick commands
 

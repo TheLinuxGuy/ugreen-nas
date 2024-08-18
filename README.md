@@ -104,3 +104,8 @@ Proxmox and many other OS will run fine on this device. For the disk activity LE
 Refer to my resources below:
 - [Alternatives to UGREEN NAS OS](alternative-operating-systems.md)
 - [How to install LED controller on Proxmox VE / Debian](proxmox-led-install.md)
+
+## Windows Drivers
+
+The network driver you need for Windows is Aquantia `AC113C` get it from https://www.marvell.com/support/downloads.html
+- I recommend installing `Intel Driver & Support assistant` for getting the other drivers for the chipset.

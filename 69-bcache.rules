@@ -1,0 +1,32 @@
+# TheLinuxGuy - this file is needed to allow ZFS /dev/bcache0
+# to come online after reboot.
+
+# register bcache devices as they come up
+# man 7 udev for syntax
+SUBSYSTEM!="block", GOTO="bcache_end"
+ACTION=="remove", GOTO="bcache_end"
+ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", GOTO="bcache_end"
+KERNEL=="fd*|sr*", GOTO="bcache_end"
+
+# blkid was run by the standard udev rules
+# It recognised bcache (util-linux 2.24+)
+ENV{ID_FS_AMBIVALENT}=="other:bcache*", GOTO="bcache_backing_found"
+# It recognised something else; bail
+ENV{ID_FS_TYPE}=="?*", GOTO="bcache_backing_end"
+
+# Backing devices: scan, symlink, register
+IMPORT{program}="probe-bcache -o udev $tempnode"
+ENV{ID_FS_AMBIVALENT}=="other:bcache*", GOTO="bcache_backing_end"
+ENV{ID_FS_UUID_ENC}=="?*", SYMLINK+="disk/by-uuid/$env{ID_FS_UUID_ENC}"
+
+LABEL="bcache_backing_found"
+RUN{builtin}+="kmod load bcache"
+RUN+="/usr/lib/udev/bcache-register $tempnode"
+LABEL="bcache_backing_end"
+
+# Cached devices: symlink
+DRIVER=="bcache", ENV{CACHED_UUID}=="?*", \
+SYMLINK+="bcache/by-uuid/$env{CACHED_UUID}"
+DRIVER=="bcache", ENV{CACHED_LABEL}=="?*", \
+SYMLINK+="bcache/by-label/$env{CACHED_LABEL}"
+LABEL="bcache_end"
