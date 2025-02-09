@@ -5,9 +5,11 @@ CLI commands, cheatsheet, tricks and learnings from bcache experiment.
 ### Resources
 - https://wiki.archlinux.org/title/User:Sigmike/bcache
 - https://sebastian.marsching.com/wiki/bin/view/Linux/Bcache/
+- https://blog.csdn.net/kobe24fgy/article/details/117924858 
 
 ## Setup and speed tweaks to always use cache first
 
+Configure optimized settings by TheLinuxGuy
 ```bash
 find /sys/ -type f -name "congested_write_threshold_us" -path "*/bcache/*"  -exec bash -c 'echo 0 > {}' \;
 find /sys/ -type f -name "congested_read_threshold_us" -path "*/bcache/*"  -exec bash -c 'echo 0 > {}' \;
@@ -15,6 +17,27 @@ find /sys/ -type f -name "writeback_delay" -path "*/bcache/*" -exec bash -c 'ech
 find /sys/ -type f -name "writeback_rate_minimum" -path "*/bcache/*" -exec bash -c 'echo 4096 > {}' \;
 find /sys/ -type f -name "writeback_percent" -path "*/bcache/*" -exec bash -c 'echo 1 > {}' \;
 find /sys/ -type f -name "read_ahead_kb" -path "*/bcache*/queue/*" -exec bash -c 'echo 8192 > {}' \;
+```
+
+Check and output all current settings.
+```bash
+find /sys/ -type f -name "congested_write_threshold_us" -path "*/bcache/*"  -exec bash -c 'echo {}; cat {}' \;
+find /sys/ -type f -name "congested_read_threshold_us" -path "*/bcache/*"  -exec bash -c 'echo {}; cat {}'  \;
+find /sys/ -type f -name "writeback_delay" -path "*/bcache/*" -exec bash -c 'echo {}; cat {}' \;
+find /sys/ -type f -name "writeback_rate_minimum" -path "*/bcache/*" -exec bash -c 'echo {}; cat {}'  \;
+find /sys/ -type f -name "writeback_percent" -path "*/bcache/*" -exec bash -c 'echo {}; cat {}'  \;
+find /sys/ -type f -name "read_ahead_kb" -path "*/bcache*/queue/*" -exec bash -c 'echo {}; cat {}'  \;
+```
+
+Disable cache on backing disks.
+```bash
+find /sys/ -type f -name "cache_mode" -path "*/bcache/*" -exec bash -c 'echo {}; cat {}'  \;
+find /sys/ -type f -name "cache_mode" -path "*/bcache/*" -exec bash -c 'echo none > {}'  \;
+```
+
+Set back to writeback
+```bash
+find /sys/ -type f -name "cache_mode" -path "*/bcache/*" -exec bash -c 'echo writeback > {}'  \;
 ```
 
 #### NVME/SSD TRIM on bcache aka discard
