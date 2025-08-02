@@ -85,6 +85,14 @@ UGREEN is barebones compared to my synology. It will do the basics of btrfs stor
 
 If all you are looking for in a NAS is throwing a bunch of disks on a RAID with a decent catching that's better than synology (which is a hotspot cache only). UGREEN can probably fit the bill if you're willing to risk or lack the ability to restore files edited a few hours/days ago from a data snapshot of the filesystem.
 
+## UGREEN hardware "quirks" and important things to note
+
+### Installing or removing any NVME drive may corrupt `ethernet` interface names
+
+Running Proxmox, if I remove one of the NVME hard drives on Proxmox the network interfaces assigned ids at boot will change. **This will corrupt Proxmox's network configuration and make the device inaccessible.**
+
+To fix this, you will need to connect a monitor/kb, modify `/etc/network/interfaces` and compare `ip link` names with the configuration. Make the necessary fixes then `systemctl restart networking` at that moment both 2.5GB and 10GB network ports should now become accessible again.
+
 ## Entering the BIOS and Boot Menu
 
 `CONTROL + F12` to get menu to select which disk to boot.
